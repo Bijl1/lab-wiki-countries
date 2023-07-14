@@ -1,14 +1,31 @@
-import "./App.css";
-import { Routes, Route } from "react-router-dom";
-import React, { useState } from 'react';
-
-const countriesData = require('./countries.json');
+import './App.css';
+import { useState, useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import CountriesList from './components/CountriesList';
+import CountryDetails from './components/CountryDetails';
 
 function App() {
-  const [countries, setCountries] = useState(countriesData);
+  const [countries, setCountries] = useState([]);
 
-  return <div className="App"></div>;
+  useEffect(() => {
+    fetch('https://ih-countries-api.herokuapp.com/countries')
+      .then(response => response.json())
+      .then(data => setCountries(data))
+      .catch(err => console.error(err));
+  }, []);
+
+  return (
+    <div className="App">
+      <Navbar />
+      <div className='App-countries'>
+        <CountriesList countries={countries} />
+        <Routes>
+          <Route path='/:alpha3Code' element={<CountryDetails countries={countries} />} />
+        </Routes>
+      </div>
+    </div>
+  );
 }
-
 
 export default App;
